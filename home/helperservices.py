@@ -3,6 +3,7 @@ from home.models import *
 import jwt
 from codeone.settings import SECRET_KEY,EMAIL_HOST_USER
 from django.core.mail import send_mail
+import datetime
 # services to check wheather the user already exists
 
 def CheckUserNameAvailability(username):
@@ -15,7 +16,8 @@ def CheckUserNameAvailability(username):
 # Generate token 
 def GenerateToken(username):
     payload = {
-    "username" : username
+    "username" : username,
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
     }
     token = jwt.encode(payload,SECRET_KEY,algorithm='HS256')
     return token
@@ -41,3 +43,14 @@ def SendMail(username,email):
     from_email = EMAIL_HOST_USER
     recipient_list=[email]
     send_mail(subject,message,from_email,recipient_list)
+
+# User activation
+
+def CheackValidToken(token):
+    try:
+        userdata = jwt.decode(token,SECRET_KEY,algorithms='HS256')
+        return userdata['username']
+    except jwt.ExpiredSignatureError:
+        return False
+    
+    

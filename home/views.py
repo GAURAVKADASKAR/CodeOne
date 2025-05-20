@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework import status
 from codeone.settings import *
-from home.helperservices import CheckUserNameAvailability,SendMail
+from home.helperservices import CheckUserNameAvailability,SendMail,CheackValidToken
 from home.serializer import UserRegistrationSerilalizer
+from home.models import *
 
 # User Registraion view
 class CoderRegistraionView(APIView):
@@ -38,4 +40,21 @@ class AdminRegistraionView(APIView):
             return Response({'status':status.HTTP_200_OK,'message':'success'})
         else:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'username is already taken'})
+    
+# Activate the user
+@api_view(["GET"])
+def ActivateUser(request):
+    token = request.GET.get("token")
+    username = CheackValidToken(token)
+    if username is False:
+        return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token or expired token'})
+    else:
+        UserRegistraion.objects.filter(username=username).update(isverified = True)
+        return Response({'status':status.HTTP_200_OK,'message':'Account successfully activated'})
+    
+
+        
+
+
+
 
