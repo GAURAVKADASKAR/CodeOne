@@ -7,5 +7,6 @@ from home.views import *
 urlpatterns = [
     path('UserRegistration/',CoderRegistraionView.as_view()),
     path('AdminRegistration/',AdminRegistraionView.as_view()),
-    path('verify/',ActivateUser)
+    path('verify/',ActivateUser),
+    path('login/',UserLogin.as_view())
 ]

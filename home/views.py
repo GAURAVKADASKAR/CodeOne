@@ -4,9 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from codeone.settings import *
-from home.helperservices import CheckUserNameAvailability,SendMail,CheackValidToken
+from home.helperservices import UserType,CheckUserNameAvailability,SendMail,CheackValidToken,CheckUserVerification,GenerateToken
 from home.serializer import UserRegistrationSerilalizer
 from home.models import *
+from django.contrib.auth import authenticate
 
 # User Registraion view
 class CoderRegistraionView(APIView):
@@ -51,6 +52,24 @@ def ActivateUser(request):
     else:
         UserRegistraion.objects.filter(username=username).update(isverified = True)
         return Response({'status':status.HTTP_200_OK,'message':'Account successfully activated'})
+
+# User Login
+class UserLogin(APIView):
+    def post(self,request):
+        username = request.data['username']
+        password = request.data['password']
+        obj = CheckUserVerification(username)
+        if obj == 'no username':
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid username'})
+        if obj == False:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'user is not verified'})
+        loginobj = authenticate(username=username,password=str(password))
+        if loginobj is None:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid user credential'})
+        token = GenerateToken(username)
+        return Response({'status':status.HTTP_200_OK,'message':'Login successfull','token':token,'usertype':UserType(username)})
+
+
     
 
         

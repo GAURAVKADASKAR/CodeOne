@@ -17,10 +17,11 @@ def CheckUserNameAvailability(username):
 def GenerateToken(username):
     payload = {
     "username" : username,
-    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=2000)
     }
     token = jwt.encode(payload,SECRET_KEY,algorithm='HS256')
     return token
+
 
 # send email to the user with token
 def SendMail(username,email):
@@ -52,5 +53,22 @@ def CheackValidToken(token):
         return userdata['username']
     except jwt.ExpiredSignatureError:
         return False
+
+# Check the user verified or not
+def CheckUserVerification(username):
+    try:
+        obj = UserRegistraion.objects.get(username = username).isverified
+        return obj
+    except UserRegistraion.DoesNotExist:
+        return "no username"
+
+# Retrive user type 
+def UserType(username):
+    obj = UserRegistraion.objects.get(username=username).isadmin
+    if obj == True:
+        return 'admin'
+    else:
+        return 'user'
+
     
     
