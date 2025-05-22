@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from codeone.settings import *
-from home.helperservices import UserType,CheckUserNameAvailability,SendMail,CheackValidToken,CheckUserVerification,GenerateToken
+from home.helperservices import ResetPassword,UserType,CheckUserNameAvailability,SendMail,CheckCurrentPassword,CheackValidToken,CheckUserVerification,GenerateToken
 from home.serializer import UserRegistrationSerilalizer
 from home.models import *
 from django.contrib.auth import authenticate
@@ -68,6 +68,28 @@ class UserLogin(APIView):
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid user credential'})
         token = GenerateToken(username)
         return Response({'status':status.HTTP_200_OK,'message':'Login successfull','token':token,'usertype':UserType(username)})
+    
+# Service for reset password though account
+class RestPassword(APIView):
+    def post(self,request):
+        token = request.data['token']
+        currentpassword = request.data['currentpassword']
+        newpassword = request.data['newpassword']
+        username = CheackValidToken(token)
+        if username == False:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
+        ispasscorrect = CheckCurrentPassword(currentpassword,username)
+        print("asssssssssssssssssssssssssssssss",ispasscorrect,username)
+        if ispasscorrect == False:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Please enter the valid current password'})
+        ResetPassword(newpassword,username)
+        return Response({'status':status.HTTP_200_OK,'message':'password reset successfully'})
+    
+        
+        
+        
+
+
 
 
     

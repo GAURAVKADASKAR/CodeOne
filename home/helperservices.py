@@ -53,6 +53,8 @@ def CheackValidToken(token):
         return userdata['username']
     except jwt.ExpiredSignatureError:
         return False
+    except jwt.DecodeError:
+        return False
 
 # Check the user verified or not
 def CheckUserVerification(username):
@@ -69,6 +71,22 @@ def UserType(username):
         return 'admin'
     else:
         return 'user'
+
+# Check current password
+def CheckCurrentPassword(currentpassword,username):
+    try:
+        user = User.objects.get(username=username)
+        obj = user.check_password(currentpassword)
+        return obj
+    except User.DoesNotExist:
+        return False
+
+# Reset password
+def ResetPassword(newpassword,username):
+    user = User.objects.get(username = username)
+    user.set_password(newpassword)
+    user.save()
+
 
     
     
