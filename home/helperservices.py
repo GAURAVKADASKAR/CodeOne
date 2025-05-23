@@ -45,8 +45,8 @@ def SendMail(username,email):
     recipient_list=[email]
     send_mail(subject,message,from_email,recipient_list)
 
-# User activation
 
+# User activation
 def CheackValidToken(token):
     try:
         userdata = jwt.decode(token,SECRET_KEY,algorithms='HS256')
@@ -82,7 +82,7 @@ def CheckCurrentPassword(currentpassword,username):
         return False
 
 # Reset password
-def ResetPassword(newpassword,username):
+def ChangePassword(newpassword,username):
     user = User.objects.get(username = username)
     user.set_password(newpassword)
     user.save()
@@ -90,13 +90,13 @@ def ResetPassword(newpassword,username):
 # Send Forgot password token
 def SendForgotPasswordToken(email,username):
     token = GenerateToken(username)
-    subject="Account Verification for CodeOne"
+    subject="Password Reset for CodeOne"
     message = (
         f"Dear User,\n\n"
         f"Thank you for registering with CodeOne.\n\n"
         f"To complete the registration process and ensure the security of your account, "
         f"please verify your email address by clicking the link below:\n"
-        f"https://http://127.0.0.1:8000/verify/?token={token}\n\n"
+        f"https://http://127.0.0.1:8000/ForgotPassword/?token={token}\n\n"
         f"If you are unable to click the link above, please copy and paste it into your web browser's address bar.\n\n"
         f"Once your email address has been verified, you will gain full access to our platform and its features.\n\n"
         f"If you did not register with CodeOne, please ignore this email.\n\n"

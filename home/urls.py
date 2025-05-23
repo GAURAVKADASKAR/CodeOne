@@ -10,5 +10,6 @@ urlpatterns = [
     path('verify/',ActivateUser),
     path('login/',UserLogin.as_view()),
     path('RestPassword/',RestPassword.as_view()),
+    path('RestPasswordToken/',RestPasswordToken.as_view()),
     path('ForgotPassword/',ForgotPassword.as_view())
 ]

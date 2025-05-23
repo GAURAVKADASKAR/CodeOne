@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from codeone.settings import *
-from home.helperservices import ResetPassword,UserType,CheckUserNameAvailability,SendMail,CheckCurrentPassword,CheackValidToken,CheckUserVerification,GenerateToken,SendForgotPasswordToken
+from home.helperservices import ChangePassword,UserType,CheckUserNameAvailability,SendMail,CheckCurrentPassword,CheackValidToken,CheckUserVerification,GenerateToken,SendForgotPasswordToken
 from home.serializer import UserRegistrationSerilalizer
 from home.models import *
 from django.contrib.auth import authenticate
@@ -44,7 +44,7 @@ class AdminRegistraionView(APIView):
         else:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'username is already taken'})
     
-    
+
 # Activate the user
 @api_view(["GET"])
 def ActivateUser(request):
@@ -84,11 +84,11 @@ class RestPassword(APIView):
         ispasscorrect = CheckCurrentPassword(currentpassword,username)
         if ispasscorrect == False:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Please enter the valid current password'})
-        ResetPassword(newpassword,username)
+        ChangePassword(newpassword,username)
         return Response({'status':status.HTTP_200_OK,'message':'password reset successfully'})
 
-# Forgot password services
-class ForgotPassword(APIView):
+# Reset password service
+class RestPasswordToken(APIView):
     def post(self,request):
         if (request.data.get('username')):
             try:
@@ -104,6 +104,21 @@ class ForgotPassword(APIView):
                 return Response({'status':status.HTTP_200_OK,'message':'password reset mail is sent to your registered mail'})
             except UserRegistraion.DoesNotExist:
                 return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalid email'})
+        
+# Forgot password service
+class ForgotPassword(APIView):
+    def post(self,request):
+        token = request.GET.get('token')
+        newpassword = request.data['newpassword']
+        username = CheackValidToken(token)
+        if username == False:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalid token'})
+        ChangePassword(newpassword,username)
+        return Response({'status':status.HTTP_200_OK,'message':'password has been changed successfully'})
+        
+
+        
+
     
         
         
