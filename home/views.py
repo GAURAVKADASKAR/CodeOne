@@ -4,10 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from codeone.settings import *
-from home.helperservices import ResetPassword,UserType,CheckUserNameAvailability,SendMail,CheckCurrentPassword,CheackValidToken,CheckUserVerification,GenerateToken
+from home.helperservices import ResetPassword,UserType,CheckUserNameAvailability,SendMail,CheckCurrentPassword,CheackValidToken,CheckUserVerification,GenerateToken,SendForgotPasswordToken
 from home.serializer import UserRegistrationSerilalizer
 from home.models import *
 from django.contrib.auth import authenticate
+
 
 # User Registraion view
 class CoderRegistraionView(APIView):
@@ -26,6 +27,7 @@ class CoderRegistraionView(APIView):
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'username is already taken'})
 
 
+
 # admin Registration view
 class AdminRegistraionView(APIView):
     def post(self,request):
@@ -41,6 +43,7 @@ class AdminRegistraionView(APIView):
             return Response({'status':status.HTTP_200_OK,'message':'success'})
         else:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'username is already taken'})
+    
     
 # Activate the user
 @api_view(["GET"])
@@ -79,11 +82,28 @@ class RestPassword(APIView):
         if username == False:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
         ispasscorrect = CheckCurrentPassword(currentpassword,username)
-        print("asssssssssssssssssssssssssssssss",ispasscorrect,username)
         if ispasscorrect == False:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Please enter the valid current password'})
         ResetPassword(newpassword,username)
         return Response({'status':status.HTTP_200_OK,'message':'password reset successfully'})
+
+# Forgot password services
+class ForgotPassword(APIView):
+    def post(self,request):
+        if (request.data.get('username')):
+            try:
+                obj= UserRegistraion.objects.get(username = request.data.get('username')).email
+                SendForgotPasswordToken(obj,request.data.get('username'))
+                return Response({'status':status.HTTP_200_OK,'message':'password reset mail is sent to your registered mail'})
+            except UserRegistraion.DoesNotExist:
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalid username'})
+        if (request.data.get('email')):
+            try:
+                obj= UserRegistraion.objects.get(email = request.data.get('email')).username
+                SendForgotPasswordToken(request.data.get('username'),obj)
+                return Response({'status':status.HTTP_200_OK,'message':'password reset mail is sent to your registered mail'})
+            except UserRegistraion.DoesNotExist:
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalid email'})
     
         
         

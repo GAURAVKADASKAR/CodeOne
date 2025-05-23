@@ -9,5 +9,6 @@ urlpatterns = [
     path('AdminRegistration/',AdminRegistraionView.as_view()),
     path('verify/',ActivateUser),
     path('login/',UserLogin.as_view()),
-    path('RestPassword/',RestPassword.as_view())
+    path('RestPassword/',RestPassword.as_view()),
+    path('ForgotPassword/',ForgotPassword.as_view())
 ]
