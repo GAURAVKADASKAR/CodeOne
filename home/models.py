@@ -16,6 +16,32 @@ class UserRegistraion(models.Model):
     def __str__(self):
         return self.username
 
+# Model for the Coding Question
+class CodingQuestion(models.Model):
+    coding_question=models.CharField(max_length=200)
+    title = models.TextField()
+    description = models.TextField()
+    difficulty = models.CharField(max_length=20, choices=[
+        ('Easy', 'Easy'),
+        ('Medium', 'Medium'),
+        ('Hard', 'Hard')
+    ])
+    constraints = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.coding_question
+
+
+class SampleTestCase(models.Model):
+    coding_question = models.ForeignKey(CodingQuestion, on_delete=models.CASCADE, related_name='sample_test_cases')
+    input_data = models.TextField()
+    expected_output = models.TextField()
+    is_public = models.BooleanField(default=True)
+    def __str__(self):
+        return f"TestCase for {self.coding_question.coding_question}"
+
+
 
 
 

@@ -4,5 +4,7 @@ from home.models import *
 
 # Models registration
 admin.site.register(UserRegistraion)
+admin.site.register(CodingQuestion)
+admin.site.register(SampleTestCase)
 
 
