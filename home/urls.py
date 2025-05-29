@@ -11,5 +11,7 @@ urlpatterns = [
     path('login/',UserLogin.as_view()),
     path('RestPassword/',RestPassword.as_view()),
     path('RestPasswordToken/',RestPasswordToken.as_view()),
-    path('ForgotPassword/',ForgotPassword.as_view())
+    path('ForgotPassword/',ForgotPassword.as_view()),
+    path('EnterQuestion/',EnterQuestion.as_view()),
+    path('GetAllQuestion/',GetAllQuestion.as_view())
 ]

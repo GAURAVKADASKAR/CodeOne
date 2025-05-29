@@ -41,8 +41,3 @@ class SampleTestCase(models.Model):
     def __str__(self):
         return f"TestCase for {self.coding_question.coding_question}"
 
-
-
-
-
-

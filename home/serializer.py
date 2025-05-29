@@ -32,8 +32,27 @@ class UserRegistrationSerilalizer(ModelSerializer):
             email = email
         )
         userobj.save()
-
         return validated_data
+
+# Serializer for sampletestcases
+class SampleTestCaseSerializer(ModelSerializer):
+    class Meta:
+        model = SampleTestCase
+        fields = ['id', 'input_data', 'expected_output', 'is_public']
     
+
+# Serializer for the CodingQuestion
+class CodingQuestionSerializer(ModelSerializer):
+    sample_test_cases = SampleTestCaseSerializer(many=True)
+    class Meta:
+        model = CodingQuestion
+        fields = "__all__"
+    
+    def create(self, validated_data):
+        sample_cases = validated_data.pop('sample_test_cases')
+        obj = CodingQuestion.objects.create(**validated_data)
+        for sample in sample_cases:
+            obj1 = SampleTestCase.objects.create(coding_question = obj , **sample)
+        return obj
 
         

@@ -105,6 +105,42 @@ class ForgotPassword(APIView):
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalid token'})
         ChangePassword(newpassword,username)
         return Response({'status':status.HTTP_200_OK,'message':'password has been changed successfully'})
+
+# Service to insert the coding questions
+class EnterQuestion(APIView):
+    def post(self,request):
+        serializer = CodingQuestionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
+        serializer.save()
+        return Response({'stauts':status.HTTP_200_OK,'message':'success'})
+
+# To get all the Question
+class GetAllQuestion(APIView):
+    def post(self,request):
+        try:
+            id =request.data.get('id')
+            question = CodingQuestion.objects.get(id=id)
+            sample_test_cases = question.sample_test_cases.filter(is_public=True)
+            return Response({
+                "Question":{
+                "question": question.coding_question,
+                "title": question.title,
+                "description": question.description,
+                "difficulty": question.difficulty,
+                "constraints": question.constraints
+            },
+                "sample_test_cases": [
+                    
+                    {
+                        "input_data": tc.input_data,
+                        "expected_output": tc.expected_output
+                    } for tc in sample_test_cases
+                ]
+            })
+        except CodingQuestion.DoesNotExist:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'not exists'})
+    
         
 
         
