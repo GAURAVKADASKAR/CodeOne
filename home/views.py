@@ -167,7 +167,19 @@ class GetAllQuestions(APIView):
             }
             )
         return Response({'status':status.HTTP_200_OK,'Questions':question_list,'message':'success'})
-   
+
+# Delete profile (Account)
+class DeleteAccount(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username = CheackValidToken(token)
+        if username == False:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
+        obj = User.objects.get(username = username)
+        obj1 = UserRegistraion.objects.get(username=username)
+        obj1.delete()
+        obj.delete()
+        return Response({'status':status.HTTP_200_OK,'message':'Account Delete Successfully'})
         
 
         
