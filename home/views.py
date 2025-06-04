@@ -177,6 +177,14 @@ class DeleteAccount(APIView):
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
         obj = User.objects.get(username = username)
         obj1 = UserRegistraion.objects.get(username=username)
+        create_obj = BackUpUserRegistraion.objects.create(
+            username = obj1.username,
+            firstname = obj1.firstname,
+            lastname = obj1.lastname,
+            email = obj1.email,
+            password = ''
+        )
+        create_obj.save()
         obj1.delete()
         obj.delete()
         return Response({'status':status.HTTP_200_OK,'message':'Account Delete Successfully'})

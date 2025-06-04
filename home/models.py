@@ -42,3 +42,17 @@ class SampleTestCase(models.Model):
     def __str__(self):
         return f"TestCase for {self.coding_question.coding_question}"
 
+class BackUpUserRegistraion(models.Model):
+    username = models.CharField(max_length=50)
+    firstname = models.CharField(max_length=20)
+    lastname = models.CharField(max_length=20)
+    email = models.EmailField(unique=True)
+    isadmin=models.BooleanField(default=False)
+    isuser=models.BooleanField(default=False)
+    isactive = models.BooleanField(default=False)
+    isverified = models.BooleanField(default=False)
+    password = models.TextField(default='')
+
+    def __str__(self):
+        return self.username
+

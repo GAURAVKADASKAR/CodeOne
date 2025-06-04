@@ -6,5 +6,6 @@ from home.models import *
 admin.site.register(UserRegistraion)
 admin.site.register(CodingQuestion)
 admin.site.register(SampleTestCase)
+admin.site.register(BackUpUserRegistraion)
 
 
