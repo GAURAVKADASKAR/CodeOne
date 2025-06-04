@@ -115,8 +115,8 @@ class EnterQuestion(APIView):
         serializer.save()
         return Response({'stauts':status.HTTP_200_OK,'message':'success'})
 
-# To get all the Question
-class GetAllQuestion(APIView):
+# To fetch Question by id
+class GetQuestionById(APIView):
     def post(self,request):
         try:
             id =request.data.get('id')
@@ -141,6 +141,33 @@ class GetAllQuestion(APIView):
         except CodingQuestion.DoesNotExist:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'not exists'})
     
+# To fetch all the questions
+class GetAllQuestions(APIView):
+    def get(self,request):
+        Questions = CodingQuestion.objects.all()
+        question_list=[]
+        for Question in Questions:
+            sample_test_cases = Question.sample_test_cases.filter(is_public=True)
+            question_list.append(
+                 {
+                "Question":{
+                "question": Question.coding_question,
+                "title": Question.title,
+                "description": Question.description,
+                "difficulty": Question.difficulty,
+                "constraints": Question.constraints
+            },
+                "sample_test_cases": [
+                    
+                    {
+                        "input_data": tc.input_data,
+                        "expected_output": tc.expected_output
+                    } for tc in sample_test_cases
+                ]
+            }
+            )
+        return Response({'status':status.HTTP_200_OK,'Questions':question_list,'message':'success'})
+   
         
 
         
