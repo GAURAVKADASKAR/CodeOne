@@ -28,6 +28,7 @@ class CodingQuestion(models.Model):
     ])
     constraints = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    points = models.PositiveIntegerField(default=10)
 
     def __str__(self):
         return self.coding_question
