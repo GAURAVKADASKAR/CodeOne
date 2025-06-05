@@ -1,5 +1,12 @@
 from home.basemodules import *
 
+
+def ValidateUsername(token):
+    username = CheackValidToken(token)
+    if username == False:
+        return None,Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
+    return username,None
+
 # User Registraion view
 class CoderRegistraionView(APIView):
     def post(self,request):
@@ -44,6 +51,9 @@ def ActivateUser(request):
         return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token or expired token'})
     else:
         UserRegistraion.objects.filter(username=username).update(isverified = True)
+        UsersCodingPoints.objects.create(
+            username = username
+        ).save()
         return Response({'status':status.HTTP_200_OK,'message':'Account successfully activated'})
 
 # User Login
@@ -172,9 +182,9 @@ class GetAllQuestions(APIView):
 class DeleteAccount(APIView):
     def post(self,request):
         token = request.data.get('token')
-        username = CheackValidToken(token)
-        if username == False:
-            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid token'})
+        username,error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
         obj = User.objects.get(username = username)
         obj1 = UserRegistraion.objects.get(username=username)
         create_obj = BackUpUserRegistraion.objects.create(
@@ -188,7 +198,23 @@ class DeleteAccount(APIView):
         obj1.delete()
         obj.delete()
         return Response({'status':status.HTTP_200_OK,'message':'Account Delete Successfully'})
+
+# Calculate Global rank
+class GlobalRank(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username,error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        rank = CalculateGlobalRankFuntion(username)
+        return Response({'status':status.HTTP_200_OK,'Rank':rank})
         
+        
+
+
+
+
+
 
         
 

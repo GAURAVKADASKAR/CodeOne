@@ -4,6 +4,7 @@ import jwt
 from codeone.settings import SECRET_KEY,EMAIL_HOST_USER
 from django.core.mail import send_mail
 import datetime
+from home.serializer import UsersCodingPointsSerializer
 # services to check wheather the user already exists
 
 def CheckUserNameAvailability(username):
@@ -108,6 +109,16 @@ def SendForgotPasswordToken(email,username):
     from_email = EMAIL_HOST_USER
     recipient_list=[email]
     send_mail(subject,message,from_email,recipient_list)
+
+# Calculate global ranking function
+def CalculateGlobalRankFuntion(username):
+    data = UsersCodingPoints.objects.all().order_by("-points")
+    serializer = UsersCodingPointsSerializer(data,many=True)
+    for i in range (0,len(serializer.data)):
+        if serializer.data[i]['username'] == username:
+            return i+1
+            
+
 
 
     

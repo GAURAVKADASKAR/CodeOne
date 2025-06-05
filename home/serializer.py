@@ -56,4 +56,7 @@ class CodingQuestionSerializer(ModelSerializer):
         return obj
 
 
-        
+class UsersCodingPointsSerializer(ModelSerializer):
+    class Meta:
+        model = UsersCodingPoints
+        fields = "__all__"

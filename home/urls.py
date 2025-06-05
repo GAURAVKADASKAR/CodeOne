@@ -15,5 +15,6 @@ urlpatterns = [
     path('EnterQuestion/',EnterQuestion.as_view()),
     path('GetQuestionById/',GetQuestionById.as_view()),
     path('GetAllQuestions/',GetAllQuestions.as_view()),
-    path('DeleteAccount/',DeleteAccount.as_view())
+    path('DeleteAccount/',DeleteAccount.as_view()),
+    path('GlobalRank/',GlobalRank.as_view())
 ]

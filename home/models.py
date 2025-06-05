@@ -52,6 +52,17 @@ class BackUpUserRegistraion(models.Model):
     isactive = models.BooleanField(default=False)
     isverified = models.BooleanField(default=False)
     password = models.TextField(default='')
+    def __str__(self):
+        return self.username
+
+class UsersCodingPoints(models.Model):
+    username = models.CharField(max_length=200)
+    points = models.PositiveBigIntegerField(default=0)
+    solvedquestion = models.PositiveBigIntegerField(default=0)
+    mediumquesitons = models.PositiveBigIntegerField(default=0)
+    easyquesitons = models.PositiveBigIntegerField(default=0)
+    hardquestions = models.PositiveBigIntegerField(default=0)
+    globalrank =  models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return self.username
