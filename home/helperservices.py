@@ -117,6 +117,12 @@ def CalculateGlobalRankFuntion(username):
     for i in range (0,len(serializer.data)):
         if serializer.data[i]['username'] == username:
             return i+1
+    
+def CalculateGlobalLeaderBoard():
+    data = UsersCodingPoints.objects.all().order_by("-points")
+    serializer = UsersCodingPointsSerializer(data,many=True)
+    return serializer.data
+
             
 
 

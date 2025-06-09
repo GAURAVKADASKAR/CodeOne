@@ -209,7 +209,13 @@ class GlobalRank(APIView):
         rank = CalculateGlobalRankFuntion(username)
         return Response({'status':status.HTTP_200_OK,'Rank':rank})
         
-        
+
+# Leader board 
+class GlobalLeaderBoard(APIView):
+    def get(self,request):
+        data = CalculateGlobalLeaderBoard()
+        return Response({'status':status.HTTP_200_OK,'data':data})
+
 
 
 
