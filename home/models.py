@@ -39,6 +39,7 @@ class SampleTestCase(models.Model):
     input_data = models.TextField()
     expected_output = models.TextField()
     is_public = models.BooleanField(default=True)
+    testcasepoint =  models.PositiveIntegerField(default=10)
     def __str__(self):
         return f"TestCase for {self.coding_question.coding_question}"
 

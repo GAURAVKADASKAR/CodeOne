@@ -38,7 +38,7 @@ class UserRegistrationSerilalizer(ModelSerializer):
 class SampleTestCaseSerializer(ModelSerializer):
     class Meta:
         model = SampleTestCase
-        fields = ['id', 'input_data', 'expected_output', 'is_public']
+        fields = ['id', 'input_data', 'expected_output', 'is_public','testcasepoint']
     
 
 # Serializer for the CodingQuestion

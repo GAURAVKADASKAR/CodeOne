@@ -123,6 +123,14 @@ def CalculateGlobalLeaderBoard():
     serializer = UsersCodingPointsSerializer(data,many=True)
     return serializer.data
 
+
+# Function to update user points
+def UpateUserPoint(username,points):
+    user = UsersCodingPoints.objects.get(username=username)
+    user.points = 90
+    user.save()
+    
+
             
 
 

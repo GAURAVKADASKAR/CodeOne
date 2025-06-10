@@ -119,6 +119,10 @@ class ForgotPassword(APIView):
 # Service to insert the coding questions
 class EnterQuestion(APIView):
     def post(self,request):
+        totalpoint =0 
+        for i in request.data['sample_test_cases']:
+            totalpoint+=i['testcasepoint']
+        request.data['points']=totalpoint
         serializer = CodingQuestionSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
@@ -219,26 +223,35 @@ class GlobalLeaderBoard(APIView):
 
 class VerifyCodeForTestCase(APIView):
     def post(self,request):
-        question_id = request.data.get('id')
+        token = request.data.get('token')
+        username,error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        id = request.data.get('question_id')
         user_code = request.data.get('user_code')
         language_id = request.data.get('language_id')
         failed_cases = []
+        totalpoins = 0
         try:
             Question = CodingQuestion.objects.get(id=id)
             sample_test_case = Question.sample_test_cases.all()
             for tc in sample_test_case:
-                result = VerifyCodeForTestCase(user_code,language_id,tc.input_data)
-                if result != tc.expected_output:
-                    failed_cases.append[
+                result = CompileCode(user_code,language_id,tc.input_data)
+                if (result["stdout"].strip()) != tc.expected_output:
+                    failed_cases.append(
                         {
                             "input":tc.input_data,
                             "expected_output":tc.expected_output,
-                            "your output":result
+                            "your output":result["stdout"].strip()
                         }
-                    ]
+                    )
+                else:
+                    totalpoins += tc.testcasepoint
             if len(failed_cases) == 0 :
-                return Response({'status':status.HTTP_200_OK,'message':'success'})
-            return Response({'status':status.HTTP_200_OK,'failed_test_cases':failed_cases})
+                UpateUserPoint(username,totalpoins)
+                return Response({'status':status.HTTP_200_OK,'message':'success','totalpoint':totalpoins})
+            UpateUserPoint(username,totalpoins)
+            return Response({'status':status.HTTP_200_OK,'failed_test_cases':failed_cases,'totalpoint':totalpoins})
 
         except CodingQuestion.DoesNotExist:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid question id'})
