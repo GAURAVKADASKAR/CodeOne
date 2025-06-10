@@ -161,6 +161,7 @@ class GetAllQuestions(APIView):
             question_list.append(
                  {
                 "Question":{
+                "question_id":Question.id,
                 "question": Question.coding_question,
                 "title": Question.title,
                 "description": Question.description,
@@ -215,6 +216,32 @@ class GlobalLeaderBoard(APIView):
     def get(self,request):
         data = CalculateGlobalLeaderBoard()
         return Response({'status':status.HTTP_200_OK,'data':data})
+
+class VerifyCodeForTestCase(APIView):
+    def post(self,request):
+        question_id = request.data.get('id')
+        user_code = request.data.get('user_code')
+        language_id = request.data.get('language_id')
+        failed_cases = []
+        try:
+            Question = CodingQuestion.objects.get(id=id)
+            sample_test_case = Question.sample_test_cases.all()
+            for tc in sample_test_case:
+                result = VerifyCodeForTestCase(user_code,language_id,tc.input_data)
+                if result != tc.expected_output:
+                    failed_cases.append[
+                        {
+                            "input":tc.input_data,
+                            "expected_output":tc.expected_output,
+                            "your output":result
+                        }
+                    ]
+            if len(failed_cases) == 0 :
+                return Response({'status':status.HTTP_200_OK,'message':'success'})
+            return Response({'status':status.HTTP_200_OK,'failed_test_cases':failed_cases})
+
+        except CodingQuestion.DoesNotExist:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid question id'})
 
 
 
