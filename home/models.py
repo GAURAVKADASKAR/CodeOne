@@ -75,7 +75,7 @@ class SolvedQuestion(models.Model):
     username = models.CharField(max_length=200)
     question_id=models.CharField(max_length=200)
     status = models.CharField(max_length=20,default='solved')
-
+    points = models.PositiveBigIntegerField(default=0)
     def __str__(self):
         return self.coding_question
 

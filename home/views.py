@@ -248,13 +248,13 @@ class VerifyCodeForTestCase(APIView):
                 else:
                     totalpoins += tc.testcasepoint
             if len(failed_cases) == 0 :
-                UpateUserPoint(username,totalpoins,Question.difficulty)
-                UpadteUserSolvedQuestion(username,id,"solved")
+                # UpateUserPoint(username,totalpoins,Question.difficulty)
+                UpadteUserSolvedQuestion(username,id,"solved",totalpoins,Question.difficulty)
                 return Response({'status':status.HTTP_200_OK,'message':'success','totalpoint':totalpoins})
             
             if len(failed_cases) < len(sample_test_case):
-                UpateUserPoint(username,totalpoins,Question.difficulty)
-                UpadteUserSolvedQuestion(username,id,"partially solved")
+                # UpateUserPoint(username,totalpoins,Question.difficulty)
+                UpadteUserSolvedQuestion(username,id,"partially solved",totalpoins,Question.difficulty)
             return Response({'status':status.HTTP_200_OK,'failed_test_cases':failed_cases,'totalpoint':totalpoins})
 
         except CodingQuestion.DoesNotExist:
