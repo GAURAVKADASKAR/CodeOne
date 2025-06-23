@@ -76,6 +76,11 @@ class SolvedQuestion(models.Model):
     question_id=models.CharField(max_length=200)
     status = models.CharField(max_length=20,default='solved')
     points = models.PositiveBigIntegerField(default=0)
+    difficulty = models.CharField(max_length=20,choices=[
+        ('Easy', 'Easy'),
+        ('Medium', 'Medium'),
+        ('Hard', 'Hard')
+    ])
     def __str__(self):
-        return self.coding_question
+        return self.username
 

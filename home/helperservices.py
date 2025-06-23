@@ -125,17 +125,17 @@ def CalculateGlobalLeaderBoard():
 
 
 # Function to update user points
-def UpateUserPoint(username,points,questionlevel,prevpoint):
+def UpateUserPoint(username,points,questionlevel,prevpoint,nsq):
     user = UsersCodingPoints.objects.get(username=username)
     user.points -= prevpoint
     user.points += points
     if questionlevel == "Easy":
-        user.easyquesitons +=1
+        user.easyquesitons +=nsq
     elif questionlevel == "Medium":
-        user.mediumquesitons +=1
+        user.mediumquesitons +=nsq
     else:
-        user.hardquestions +=1
-    user.solvedquestion +=1
+        user.hardquestions +=nsq
+    user.solvedquestion +=nsq
     user.save()
 
 def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
@@ -148,7 +148,7 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
             sp.points = points
             sp.status = status
             sp.save()
-            UpateUserPoint(username,points,diffculty,prevpoint)
+            UpateUserPoint(username,points,diffculty,prevpoint,0)
     else:
         obj = SolvedQuestion.objects.create(
             username = username,
@@ -158,7 +158,7 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
             points = points
         )
         obj.save()
-        UpateUserPoint(username,points,diffculty,0)
+        UpateUserPoint(username,points,diffculty,0,1)
 
 
 
