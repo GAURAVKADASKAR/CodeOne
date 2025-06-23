@@ -8,6 +8,7 @@ admin.site.register(CodingQuestion)
 admin.site.register(SampleTestCase)
 admin.site.register(BackUpUserRegistraion)
 admin.site.register(UsersCodingPoints),
-admin.site.register(SolvedQuestion)
-
-
+admin.site.register(SolvedQuestion),
+admin.site.register(SqlQuestions),
+admin.site.register(EmployeeData)
+admin.site.register(SolvedSqlQuestion)

@@ -60,3 +60,11 @@ class UsersCodingPointsSerializer(ModelSerializer):
     class Meta:
         model = UsersCodingPoints
         fields = "__all__"
+
+
+# Serializer for Sql Question
+class SqlQuestionsSerializer(ModelSerializer):
+    class Meta:
+        model = SqlQuestions
+        fields = "__all__"
+        

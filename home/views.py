@@ -259,6 +259,57 @@ class VerifyCodeForTestCase(APIView):
 
         except CodingQuestion.DoesNotExist:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'invalid question id'})
+    
+
+# Service for create Sql Question
+class EnterSqlQuestion(APIView):
+    def post(self,request):
+        serializer = SqlQuestionsSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'error':serializer.errors})
+        serializer.save()
+        return Response({'status':status.HTTP_200_OK,'message':'success'})
+
+
+
+class ExecuteUserSql(APIView):
+    def post(self, request):
+        question_id = request.data.get("question_id")
+        user_sql = request.data.get("user_sql")
+
+        try:
+            question = SqlQuestions.objects.get(id=question_id)
+        except SqlQuestions.DoesNotExist:
+            return Response({'status': status.HTTP_404_NOT_FOUND, 'error': 'Question not found'})
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(user_sql)
+                columns = [col[0] for col in cursor.description]
+                rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        except Exception as e:
+            return Response({'status': status.HTTP_400_BAD_REQUEST, 'error': str(e)})
+
+        expected_output = json.loads(question.expected_output) 
+
+        actual_output = [list(row.values())[0] for row in rows]
+
+        is_correct = actual_output == expected_output
+        if is_correct == True:
+            UpadteSqlQuestion("sdllmf",question_id,'solved',question.points,question.difficulty)
+            # def UpadteSqlQuestion(usUpadteSqlQuestionername,question_id,status,points,diffculty):
+
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'result': actual_output,
+            'expected': expected_output,
+            'is_correct': is_correct
+        })
+
+    
+
+
 
 
 

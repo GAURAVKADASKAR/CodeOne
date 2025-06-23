@@ -162,6 +162,29 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
 
 
 
+def UpadteSqlQuestion(username,question_id,status,points,diffculty):
+    question = CodingQuestion.objects.get(id=question_id)
+    obj_new  = SolvedQuestion.objects.filter(question_id=question_id)
+    if obj_new.exists():
+        sp = SolvedSqlQuestion.objects.get(question_id=question_id)
+        prevpoint = sp.points
+        if sp.points < points:
+            sp.points = points
+            sp.status = status
+            sp.save()
+            UpateUserPoint(username,points,diffculty,prevpoint,0)
+    else:
+        obj = SolvedQuestion.objects.create(
+            username = username,
+            question_id = question_id,
+            status = status,
+            difficulty = question.difficulty,
+            points = points
+        )
+        obj.save()
+        UpateUserPoint(username,points,diffculty,0,1)
+
+
             
 
 

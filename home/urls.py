@@ -18,5 +18,7 @@ urlpatterns = [
     path('DeleteAccount/',DeleteAccount.as_view()),
     path('GlobalRank/',GlobalRank.as_view()),
     path('GlobalLeaderBoard/',GlobalLeaderBoard.as_view()),
-    path('VerifyCodeForTestCase/',VerifyCodeForTestCase.as_view())
+    path('VerifyCodeForTestCase/',VerifyCodeForTestCase.as_view()),
+    path('NewsqlQuestion/',EnterSqlQuestion.as_view()),
+    path('ExecuteUserSql/',ExecuteUserSql.as_view())
 ]
