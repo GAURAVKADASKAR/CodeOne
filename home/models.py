@@ -65,6 +65,7 @@ class UsersCodingPoints(models.Model):
     easyquesitons = models.PositiveBigIntegerField(default=0)
     hardquestions = models.PositiveBigIntegerField(default=0)
     globalrank =  models.PositiveSmallIntegerField(default=0)
+    solvedquestion = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.username
@@ -76,6 +77,7 @@ class SolvedQuestion(models.Model):
     question_id=models.CharField(max_length=200)
     status = models.CharField(max_length=20,default='solved')
     points = models.PositiveBigIntegerField(default=0)
+    user_code = models.TextField(default='')
     difficulty = models.CharField(max_length=20,choices=[
         ('Easy', 'Easy'),
         ('Medium', 'Medium'),

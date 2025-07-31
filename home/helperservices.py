@@ -138,7 +138,7 @@ def UpateUserPoint(username,points,questionlevel,prevpoint,nsq):
     user.solvedquestion +=nsq
     user.save()
 
-def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
+def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty,user_code):
     question = CodingQuestion.objects.get(id=question_id)
     obj_new  = SolvedQuestion.objects.filter(question_id=question_id)
     if obj_new.exists():
@@ -147,6 +147,7 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
         if sp.points < points:
             sp.points = points
             sp.status = status
+            sp.user_code = user_code
             sp.save()
             UpateUserPoint(username,points,diffculty,prevpoint,0)
     else:
@@ -155,6 +156,7 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
             question_id = question_id,
             status = status,
             difficulty = question.difficulty,
+            user_code = user_code,
             points = points
         )
         obj.save()
@@ -163,8 +165,8 @@ def UpadteUserSolvedQuestion(username,question_id,status,points,diffculty):
 
 
 def UpadteSqlQuestion(username,question_id,status,points,diffculty):
-    question = CodingQuestion.objects.get(id=question_id)
-    obj_new  = SolvedQuestion.objects.filter(question_id=question_id)
+    question = SqlQuestions.objects.get(id=question_id)
+    obj_new  = SolvedSqlQuestion.objects.filter(question_id=question_id)
     if obj_new.exists():
         sp = SolvedSqlQuestion.objects.get(question_id=question_id)
         prevpoint = sp.points
@@ -174,7 +176,7 @@ def UpadteSqlQuestion(username,question_id,status,points,diffculty):
             sp.save()
             UpateUserPoint(username,points,diffculty,prevpoint,0)
     else:
-        obj = SolvedQuestion.objects.create(
+        obj = SolvedSqlQuestion.objects.create(
             username = username,
             question_id = question_id,
             status = status,

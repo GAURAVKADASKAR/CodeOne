@@ -20,5 +20,7 @@ urlpatterns = [
     path('GlobalLeaderBoard/',GlobalLeaderBoard.as_view()),
     path('VerifyCodeForTestCase/',VerifyCodeForTestCase.as_view()),
     path('NewsqlQuestion/',EnterSqlQuestion.as_view()),
-    path('ExecuteUserSql/',ExecuteUserSql.as_view())
+    path('ExecuteUserSql/',ExecuteUserSql.as_view()),
+    path('GetAllSolvedQuestion/',GetAllSolvedQuestion.as_view()),
+    path('GetAllSolutionById/',GetAllSolutionById.as_view())
 ]

@@ -249,12 +249,12 @@ class VerifyCodeForTestCase(APIView):
                     totalpoins += tc.testcasepoint
             if len(failed_cases) == 0 :
                 # UpateUserPoint(username,totalpoins,Question.difficulty)
-                UpadteUserSolvedQuestion(username,id,"solved",totalpoins,Question.difficulty)
+                UpadteUserSolvedQuestion(username,id,"solved",totalpoins,Question.difficulty,user_code)
                 return Response({'status':status.HTTP_200_OK,'message':'success','totalpoint':totalpoins})
             
             if len(failed_cases) < len(sample_test_case):
                 # UpateUserPoint(username,totalpoins,Question.difficulty)
-                UpadteUserSolvedQuestion(username,id,"partially solved",totalpoins,Question.difficulty)
+                UpadteUserSolvedQuestion(username,id,"partially solved",totalpoins,Question.difficulty,user_code)
             return Response({'status':status.HTTP_200_OK,'failed_test_cases':failed_cases,'totalpoint':totalpoins})
 
         except CodingQuestion.DoesNotExist:
@@ -274,31 +274,47 @@ class EnterSqlQuestion(APIView):
 
 class ExecuteUserSql(APIView):
     def post(self, request):
+        token = request.data.get('token')
+        username, error_message = ValidateUsername(token)
+
+        if error_message is not None:
+            return error_message
+
         question_id = request.data.get("question_id")
         user_sql = request.data.get("user_sql")
 
         try:
             question = SqlQuestions.objects.get(id=question_id)
         except SqlQuestions.DoesNotExist:
-            return Response({'status': status.HTTP_404_NOT_FOUND, 'error': 'Question not found'})
+            return Response({
+                'status': status.HTTP_404_NOT_FOUND,
+                'error': 'Question not found'
+            })
 
         try:
             with connection.cursor() as cursor:
                 cursor.execute(user_sql)
                 columns = [col[0] for col in cursor.description]
-                rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                rows = cursor.fetchall()
+                actual_output = [dict(zip(columns, row)) for row in rows]
         except Exception as e:
-            return Response({'status': status.HTTP_400_BAD_REQUEST, 'error': str(e)})
+            return Response({
+                'status': status.HTTP_400_BAD_REQUEST,
+                'error': str(e)
+            })
 
-        expected_output = json.loads(question.expected_output) 
-
-        actual_output = [list(row.values())[0] for row in rows]
+        try:
+            expected_output = json.loads(question.expected_output)
+        except Exception as e:
+            return Response({
+                'status': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'error': f'Invalid expected_output format: {str(e)}'
+            })
 
         is_correct = actual_output == expected_output
-        if is_correct == True:
-            UpadteSqlQuestion("sdllmf",question_id,'solved',question.points,question.difficulty)
-            # def UpadteSqlQuestion(usUpadteSqlQuestionername,question_id,status,points,diffculty):
 
+        if is_correct:
+            UpadteSqlQuestion(username, question_id, 'solved', question.points, question.difficulty)
 
         return Response({
             'status': status.HTTP_200_OK,
@@ -307,8 +323,27 @@ class ExecuteUserSql(APIView):
             'is_correct': is_correct
         })
 
-    
+# Service to find all the solved question for a specific user
 
+class GetAllSolvedQuestion(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username, error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        SovedQuestion = SolvedQuestion.objects.filter(username=username)
+        serilaizer = SolvedQuestionSerializer(SovedQuestion,many=True)
+        return Response({'status':status.HTTP_200_OK,'data':serilaizer.data})
+
+# Service to find the solved qustion with the queestion id
+
+class GetAllSolutionById(APIView):
+    def post(self,request):
+        question_id = request.data.get('question_id')
+        solved_question = SolvedQuestion.objects.filter(question_id=question_id)
+        serializer = SolvedQuestionSerializer(solved_question,many=True)
+        return Response({'status':status.HTTP_200_OK,'data':serializer.data})
+    
 
 
 

@@ -68,3 +68,8 @@ class SqlQuestionsSerializer(ModelSerializer):
         model = SqlQuestions
         fields = "__all__"
         
+# Serializer for solved coding questions
+class SolvedQuestionSerializer(ModelSerializer):
+    class Meta:
+        model = SolvedQuestion
+        fields = "__all__"
