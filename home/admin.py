@@ -12,3 +12,7 @@ admin.site.register(SolvedQuestion),
 admin.site.register(SqlQuestions),
 admin.site.register(EmployeeData)
 admin.site.register(SolvedSqlQuestion)
+admin.site.register(Quiz)
+admin.site.register(QuizQuestion)
+admin.site.register(QuizAnswer)
+admin.site.register(QuizResult)

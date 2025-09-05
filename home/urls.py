@@ -22,5 +22,8 @@ urlpatterns = [
     path('NewsqlQuestion/',EnterSqlQuestion.as_view()),
     path('ExecuteUserSql/',ExecuteUserSql.as_view()),
     path('GetAllSolvedQuestion/',GetAllSolvedQuestion.as_view()),
-    path('GetAllSolutionById/',GetAllSolutionById.as_view())
+    path('GetAllSolutionById/',GetAllSolutionById.as_view()),
+    path('CreateQuiz/',CreateQuiz.as_view()),
+    path('GetAllQuiz/',GetAllQuiz.as_view()),
+    path('GetQuizById/',GetQuizById.as_view())
 ]

@@ -129,5 +129,55 @@ class SolvedSqlQuestion(models.Model):
     ])
     def __str__(self):
         return self.username
+    
+# Model for quiz 
+class Quiz(models.Model):
+    quiz_name=models.CharField(max_length=200)
+    title = models.TextField()
+    description = models.TextField()
+    total_questions = models.PositiveIntegerField(default=10)
+    total_marks = models.PositiveIntegerField(default=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField()
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.quiz_name
+
+# Model for quiz questions
+class QuizQuestion(models.Model):
+    quiz_id = models.CharField(max_length=200)
+    quiz_question=models.CharField(max_length=200)
+    option1 = models.CharField(max_length=200)
+    option2 = models.CharField(max_length=200)
+    option3 = models.CharField(max_length=200)
+    option4 = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.quiz_question
+
+# Model for quiz answers
+class QuizAnswer(models.Model):
+    quiz_question_id = models.CharField(max_length=200)
+    correct_option = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)    
+
+    def __str__(self):
+        return self.quiz_question_id
+
+# Model for quiz results
+class QuizResult(models.Model):
+    username = models.CharField(max_length=200)
+    quiz_id = models.CharField(max_length=200)
+    score = models.PositiveIntegerField(default=0)
+    total_questions = models.PositiveIntegerField(default=0)
+    correct_answers = models.PositiveIntegerField(default=0)
+    attempted_questions = models.PositiveIntegerField(default=0)
+    date_taken = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.username
+
 
 

@@ -343,6 +343,105 @@ class GetAllSolutionById(APIView):
         solved_question = SolvedQuestion.objects.filter(question_id=question_id)
         serializer = SolvedQuestionSerializer(solved_question,many=True)
         return Response({'status':status.HTTP_200_OK,'data':serializer.data})
+
+# Service to create quiz
+class CreateQuiz(APIView):
+    def post(self,request):
+        quiz_name = request.data.get('quiz_name')
+        title = request.data.get('title')
+        total_questions = request.data.get('total_questions')
+        total_marks = request.data.get('total_marks')   
+        description = request.data.get('description')
+        start_time = request.data.get('start_time')
+
+        quize_questions = request.data.get('quiz_questions')
+
+        quiz = Quiz.objects.create(
+            quiz_name=quiz_name,
+            total_questions=total_questions,
+            total_marks=total_marks,
+            description=description,
+            title=title,
+            start_time=start_time
+        )
+        quiz.save()
+
+        for q in quize_questions:
+            quiz_question = QuizQuestion.objects.create(
+                quiz_id=quiz.id,
+                quiz_question=q['question'],
+                option1=q['option1'],
+                option2=q['option2'],
+                option3=q['option3'],
+                option4=q['option4']
+            )
+            quiz_answers = QuizAnswer.objects.create (
+                quiz_question_id=quiz_question.id,
+                correct_option=q['correct_option']
+            )
+    
+            quiz_question.save()
+            quiz_answers.save()
+        
+        return Response({'status':status.HTTP_200_OK,'message':'success'})
+    
+# Service to fetch all the quiz
+class GetAllQuiz(APIView):
+    def get(self,request):
+        quizzes = Quiz.objects.all()
+        quiz_list = []
+        for quiz in quizzes:
+            quiz_list.append({
+                'id': quiz.id,
+                'quiz_name': quiz.quiz_name,
+                'title': quiz.title,
+                'description': quiz.description,
+                'total_questions': quiz.total_questions,
+                'total_marks': quiz.total_marks,
+                'start_time': quiz.start_time,
+                'is_active': quiz.is_active
+            })
+        return Response({'status':status.HTTP_200_OK,'data':quiz_list})
+
+# Service to fetch quiz by id
+class GetQuizById(APIView):
+    def post(self,request):
+        quiz_id = request.data.get('quiz_id')
+        try:
+            quiz = Quiz.objects.get(id=quiz_id,is_active=True)
+            quiz_questions = QuizQuestion.objects.filter(quiz_id=quiz_id)
+            questions_list = []
+            for question in quiz_questions:
+                questions_list.append({
+                    'id': question.id,
+                    'quiz_question': question.quiz_question,
+                    'option1': question.option1,
+                    'option2': question.option2,
+                    'option3': question.option3,
+                    'option4': question.option4
+                })
+            return Response({
+                'status': status.HTTP_200_OK,
+                'quiz': {
+                    'id': quiz.id,
+                    'quiz_name': quiz.quiz_name,
+                    'title': quiz.title,
+                    'description': quiz.description,
+                    'total_questions': quiz.total_questions,
+                    'total_marks': quiz.total_marks,
+                    'start_time': quiz.start_time,
+                    'is_active': quiz.is_active,
+                    'questions': questions_list
+                }
+            })
+        except Quiz.DoesNotExist:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Quiz not found or not active'})
+
+
+        
+
+
+        
     
 
 

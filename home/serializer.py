@@ -73,3 +73,4 @@ class SolvedQuestionSerializer(ModelSerializer):
     class Meta:
         model = SolvedQuestion
         fields = "__all__"
+    
