@@ -73,4 +73,9 @@ class SolvedQuestionSerializer(ModelSerializer):
     class Meta:
         model = SolvedQuestion
         fields = "__all__"
-    
+
+# Serializer for leaderboard
+class LeaderBoardSerializer(ModelSerializer):
+    class Meta:
+        model = QuizResult
+        fields = "__all__"

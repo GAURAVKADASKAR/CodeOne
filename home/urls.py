@@ -25,5 +25,10 @@ urlpatterns = [
     path('GetAllSolutionById/',GetAllSolutionById.as_view()),
     path('CreateQuiz/',CreateQuiz.as_view()),
     path('GetAllQuiz/',GetAllQuiz.as_view()),
-    path('GetQuizById/',GetQuizById.as_view())
+    path('GetQuizById/',GetQuizById.as_view()),
+    path('ListOfAllQuiz/',ListOfAllQuiz.as_view()),
+    path('RegisterForQuiz/',RegisterForQuiz.as_view()),
+    path('GetQuizListByUser/',GetQuizListByUser.as_view()),
+    path('SubmitQuizAnswer/',SubmitQuizAnswers.as_view()),
+    path('QuizLeaderBoard/',QuizLeaderBoard.as_view()),
 ]

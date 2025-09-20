@@ -436,12 +436,119 @@ class GetQuizById(APIView):
             })
         except Quiz.DoesNotExist:
             return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Quiz not found or not active'})
+    
+# Service for list of all quiz to register
+class ListOfAllQuiz(APIView):
+    def get(self,request):
+        quizzes = Quiz.objects.filter(is_active=False)
+        quiz_list = []
+        for quiz in quizzes:
+            quiz_list.append({
+                'id': quiz.id,
+                'quiz_name': quiz.quiz_name,
+                'title': quiz.title,
+                'description': quiz.description,
+                'total_questions': quiz.total_questions,
+                'total_marks': quiz.total_marks,
+                'start_time': quiz.start_time,
+                'is_active': quiz.is_active
+            })
+        return Response({'status':status.HTTP_200_OK,'data':quiz_list})
 
 
-        
+# Service to register for quiz
+class RegisterForQuiz(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username, error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        quiz_id = request.data.get('quiz_id')
+        try:
+            existing_registration = QuizRegistration.objects.filter(username=username, quiz_id=quiz_id).first()
+            if existing_registration:
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'You have already registered for this quiz'})
+            registration = QuizRegistration.objects.create(
+                username=username,
+                quiz_id=quiz_id
+            )
+            registration.save()
+            return Response({'status':status.HTTP_200_OK,'message':'Successfully registered for the quiz'})
+        except Quiz.DoesNotExist:
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Quiz not found or already active'})
 
 
-        
+# Service to get Quiz list by user
+class GetQuizListByUser(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username, error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        registrations = QuizRegistration.objects.filter(username=username)
+        quiz_list = []
+        for reg in registrations:
+            try:
+                quiz = Quiz.objects.get(id=reg.quiz_id)
+                quiz_list.append({
+                    'id': quiz.id,
+                    'quiz_name': quiz.quiz_name,
+                    'title': quiz.title,
+                    'description': quiz.description,
+                    'total_questions': quiz.total_questions,
+                    'total_marks': quiz.total_marks,
+                    'start_time': quiz.start_time,
+                    'is_active': quiz.is_active
+                })
+            except Quiz.DoesNotExist:
+                continue
+        return Response({'status':status.HTTP_200_OK,'data':quiz_list})
+
+# Service to submit quiz answers and calculate score
+
+class SubmitQuizAnswers(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        username, error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        quiz_id = request.data.get('quiz_id')
+        answers = request.data.get('answers')
+        total_questions = Quiz.objects.get(id=quiz_id).total_questions
+        score = 0 
+        try:
+            is_attempted = QuizRegistration.objects.get(username=username,quiz_id=quiz_id,is_submitted=True)
+            if is_attempted is not None:
+                return Response({'status':200,'message':'Already submitted'})
+        except QuizRegistration.DoesNotExist:
+            for i in answers:
+                correct_option  = QuizAnswer.objects.get(quiz_question_id=i['question_id']).correct_option
+                if i['selected_option'] == correct_option:
+                    score += 1
+
+            quiz_result = QuizResult.objects.create(
+                username=username,
+                quiz_id=quiz_id,
+                score=score,
+                total_questions=total_questions,
+                correct_answers=score,
+                attempted_questions=len(answers)
+            )
+            update_quiz_Attempted_status = QuizRegistration.objects.filter(username=username,quiz_id=quiz_id).update(
+                is_submitted=True
+            )
+
+            quiz_result.save()
+            return Response({'status':status.HTTP_200_OK,'message':'Quiz submitted successfully','score':score})
+
+# Service to calculate quiz leader board
+class QuizLeaderBoard(APIView):
+    def post(self,request):
+        quiz_id = request.data.get('quiz_id')
+        leader_board = QuizResult.objects.filter(quiz_id=quiz_id).order_by('-score')
+        serializer = LeaderBoardSerializer(leader_board,many=True)
+        return Response({'status':status.HTTP_200_OK,'data':serializer.data})
+
     
 
 

@@ -178,6 +178,17 @@ class QuizResult(models.Model):
 
     def __str__(self):
         return self.username
+    
+# Model for quiz registration
+class QuizRegistration(models.Model):
+    username = models.CharField(max_length=200)
+    quiz_id = models.CharField(max_length=200)
+    registration_time = models.DateTimeField(auto_now_add=True)
+    is_submitted = models.BooleanField(default=False)
+    submission_time = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.username
 
 
 
