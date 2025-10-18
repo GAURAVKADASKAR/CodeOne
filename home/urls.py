@@ -34,5 +34,6 @@ urlpatterns = [
     path('QuizLeaderBoard/',QuizLeaderBoard.as_view()),
     path('CreateHackaThon/',CreateHackaThon.as_view()),
     path('ListHackathonsForRegistration/',ListHackathonsForRegistration.as_view()),
-    path('HackRegistrations/',HackRegistrations.as_view())
+    path('HackRegistrations/',HackRegistrations.as_view()),
+    path('SendMessageForHackaThon/',SendMessageForHackaThon.as_view())
 ]

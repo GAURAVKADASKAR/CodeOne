@@ -46,6 +46,28 @@ def SendMail(username,email):
     recipient_list=[email]
     send_mail(subject,message,from_email,recipient_list)
 
+
+# send email to the all hackathon team lead
+def SendMailToLeads(customMessage,id):
+    hackaThon = HackaThon.objects.get(id=id)
+
+    print(hackaThon,"we are ==========================================")
+    subject=f"{hackaThon.hackathon_name}"
+    memberList = HackaThonRegistration.objects.filter(hackathon_id = id,member_type='lead',is_verified=True)
+    for member in memberList:
+        message = (
+        f"Dear {member.member_name},\n\n"
+        f"{customMessage}\n\n"
+        f"Hackathon: {hackaThon.hackathon_name}\n"
+        f"If you have any questions, reply to this email or contact us at {hackaThon.email}.\n\n"
+        f"Best regards,\n"
+        f"{hackaThon.organizer_name}\n"
+        f"Email : {hackaThon.email}")
+        from_email = EMAIL_HOST_USER
+        recipient_list=[member.member_email]
+        send_mail(subject,message,from_email,recipient_list)
+
+
 # Send hackthon mail 
 def SendHackthonRegistrationMail(email):
     token = GenerateToken(email)

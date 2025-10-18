@@ -588,6 +588,14 @@ def VerifyHackthonRegistration(request):
     return Response({'status':status.HTTP_200_OK,'message':'success'})
 
 
+# Service to send message to the leads
+class SendMessageForHackaThon(APIView):
+    def post(self,request):
+        data = request.data
+        SendMailToLeads(data['message'],data['id'])
+        return Response({'status':status.HTTP_200_OK,'message':'success'})
+
+
 
 
 
