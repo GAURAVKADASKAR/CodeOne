@@ -79,3 +79,16 @@ class LeaderBoardSerializer(ModelSerializer):
     class Meta:
         model = QuizResult
         fields = "__all__"
+
+# Serializer for HackaThon
+class HackaThonSerializer(ModelSerializer):
+    class Meta:
+        model = HackaThon
+        fields = "__all__"
+    
+# Serializer for HackThonRegistration
+class HackaThonRegistrationSerializer(ModelSerializer):
+    class Meta:
+        model = HackaThonRegistration
+        fields = "__all__"
+        

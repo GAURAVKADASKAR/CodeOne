@@ -548,6 +548,56 @@ class QuizLeaderBoard(APIView):
         leader_board = QuizResult.objects.filter(quiz_id=quiz_id).order_by('-score')
         serializer = LeaderBoardSerializer(leader_board,many=True)
         return Response({'status':status.HTTP_200_OK,'data':serializer.data})
+    
+# Service to create hackathon 
+class CreateHackaThon(APIView):
+    def post(self,request):
+        data = request.data
+        serializer = HackaThonSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status':status.HTTP_200_OK,'message':'success'})
+        return Response({'status':status.HTTP_400_BAD_REQUEST,'error':serializer.errors})
+
+# Service to display available hackathons for registration
+class ListHackathonsForRegistration(APIView):
+    def get(self,request):
+        hackaThon = HackaThon.objects.filter(is_open=True)
+        hackthonList = HackaThonSerializer(hackaThon,many=True)
+        return Response({'status':status.HTTP_200_OK,'message':'success','data':hackthonList.data})
+
+# Service for hackThonRegistration
+class HackRegistrations(APIView):
+    def post(self,request):
+        memberList = request.data
+        for member in memberList:
+            serializer = HackaThonRegistrationSerializer(data=member)
+            if not serializer.is_valid():
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
+            serializer.save()
+            SendHackthonRegistrationMail(member['member_email'])
+        return Response({'status':status.HTTP_200_OK,'message':'success'})
+        
+# Funtion to verify user for hackathon
+@api_view(["GET"])
+def VerifyHackthonRegistration(request):
+    member_email = CheackValidToken(request.GET.get('token'))
+    if member_email is False:
+        return Response({'status':status.HTTP_200_OK,'message':'Invalid token'})
+    verify_memeber = HackaThonRegistration.objects.filter(member_email = member_email).update(is_verified=True)
+    return Response({'status':status.HTTP_200_OK,'message':'success'})
+
+
+
+
+
+
+
+
+
+
+
+        
 
     
 

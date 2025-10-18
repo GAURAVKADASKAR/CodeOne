@@ -46,6 +46,28 @@ def SendMail(username,email):
     recipient_list=[email]
     send_mail(subject,message,from_email,recipient_list)
 
+# Send hackthon mail 
+def SendHackthonRegistrationMail(email):
+    token = GenerateToken(email)
+    subject="Account Verification for CodeOne"
+    message = (
+        f"Dear User,\n\n"
+        f"Thank you for registering with CodeOne.\n\n"
+        f"To complete the registration process and ensure the security of your account, "
+        f"please verify your email address by clicking the link below:\n"
+        f"https://http://127.0.0.1:8000/verifyHackthonRegistrations/?token={token}\n\n"
+        f"If you are unable to click the link above, please copy and paste it into your web browser's address bar.\n\n"
+        f"Once your email address has been verified, you will gain full access to our platform and its features.\n\n"
+        f"If you did not register with CodeOne, please ignore this email.\n\n"
+        f"Thank you for choosing CodeOne. If you have any questions or need further assistance, "
+        f"please contact us at CodeOne.support@gmail.com.\n\n"
+        f"Best regards,\n"
+        f"CodeOne Team"
+        )
+    from_email = EMAIL_HOST_USER
+    recipient_list=[email]
+    send_mail(subject,message,from_email,recipient_list)
+
 
 # User activation
 def CheackValidToken(token):
@@ -185,6 +207,8 @@ def UpadteSqlQuestion(username,question_id,status,points,diffculty):
         )
         obj.save()
         UpateUserPoint(username,points,diffculty,0,1)
+    
+
 
 
             

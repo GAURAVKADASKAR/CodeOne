@@ -191,4 +191,41 @@ class QuizRegistration(models.Model):
         return self.username
 
 
+# Model for hackathon
+class HackaThon(models.Model): 
+    hackathon_name=models.CharField(max_length=200)
+    email = models.EmailField() 
+    organizer_name = models.CharField(max_length=200)
+    number_of_teams = models.PositiveIntegerField()
+    title = models.TextField()
+    description = models.TextField()
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    registration_deadline = models.DateTimeField()
+    is_registration_open = models.BooleanField(default=True)
+    is_open = models.BooleanField(default=True)
+    def __str__(self):
+        return self.hackathon_name
 
+
+# Model for HackaThon registration
+class HackaThonRegistration(models.Model):
+    PARTICIPATION_TYPE = [
+        ('member', 'Member'),
+        ('lead', 'Lead'),
+    ]
+    hackathon_id = models.CharField(max_length=50)
+    hackathon_name = models.TextField()
+    member_name = models.CharField(max_length=50)
+    member_email = models.EmailField()
+    member_type = models.CharField(max_length=20,choices=PARTICIPATION_TYPE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+    team_name = models.TextField()
+    college_name = models.CharField(max_length=50)
+    phone_number = models.TextField()
+
+    def __str__(self):
+        return (self.member_name + self.team_name)
+    
