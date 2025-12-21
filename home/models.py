@@ -208,6 +208,16 @@ class HackaThon(models.Model):
     def __str__(self):
         return self.hackathon_name
 
+# Model for hackathon problemStatements
+class hackathonProblemStatement(models.Model):
+    hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
+    subject = models.TextField()
+    number_of_team = models.PositiveIntegerField(default=0)
+    is_available = models.BooleanField(default=True)
+    description = models.TextField()
+    def __str__(self):
+        return str(self.hackathon_id) + " : " + self.subject
+
 
 # Model for HackaThon registration
 class HackaThonRegistration(models.Model):
@@ -223,9 +233,16 @@ class HackaThonRegistration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
     team_name = models.TextField()
+    team_id = models.TextField(null=True,blank=True)
     college_name = models.CharField(max_length=50)
     phone_number = models.TextField()
 
     def __str__(self):
         return (self.member_name + self.team_name)
+
+# Model for hackathon problem to team
+class HackathonProblemTeam(models.Model):
+    hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
+    problem_statement_id = models.ForeignKey(hackathonProblemStatement,on_delete=models.CASCADE)
+    team_id = models.ForeignKey(HackaThonRegistration,on_delete=models.CASCADE)
     

@@ -68,8 +68,8 @@ def SendMailToLeads(customMessage,id):
         send_mail(subject,message,from_email,recipient_list)
 
 
-# Send hackthon mail 
-def SendHackthonRegistrationMail(email):
+# Send hackathon mail 
+def SendhackathonRegistrationMail(email):
     token = GenerateToken(email)
     subject="Account Verification for CodeOne"
     message = (
@@ -77,7 +77,7 @@ def SendHackthonRegistrationMail(email):
         f"Thank you for registering with CodeOne.\n\n"
         f"To complete the registration process and ensure the security of your account, "
         f"please verify your email address by clicking the link below:\n"
-        f"https://http://127.0.0.1:8000/verifyHackthonRegistrations/?token={token}\n\n"
+        f"https://http://127.0.0.1:8000/verifyhackathonRegistrations/?token={token}\n\n"
         f"If you are unable to click the link above, please copy and paste it into your web browser's address bar.\n\n"
         f"Once your email address has been verified, you will gain full access to our platform and its features.\n\n"
         f"If you did not register with CodeOne, please ignore this email.\n\n"

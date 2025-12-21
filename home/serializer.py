@@ -86,9 +86,21 @@ class HackaThonSerializer(ModelSerializer):
         model = HackaThon
         fields = "__all__"
     
-# Serializer for HackThonRegistration
+# Serializer for hackathonRegistration
 class HackaThonRegistrationSerializer(ModelSerializer):
     class Meta:
         model = HackaThonRegistration
         fields = "__all__"
+
+# Serializer for hackathon problem statement
+class hackathonProblemStatementSerializer(ModelSerializer):
+    class Meta:
+        fields = "__all__"
+        model = hackathonProblemStatement
+
+# Serializer for problem statment with team
+class HackathonProblemTeamserializer(ModelSerializer):
+    models = HackathonProblemTeam
+    fields = "__all__"
+
         

@@ -8,7 +8,7 @@ urlpatterns = [
     path('UserRegistration/',CoderRegistraionView.as_view()),
     path('AdminRegistration/',AdminRegistraionView.as_view()),
     path('verify/',ActivateUser),
-    path('verifyHackthonRegistrations/',VerifyHackthonRegistration),
+    path('verifyhackathonRegistrations/',VerifyhackathonRegistration),
     path('login/',UserLogin.as_view()),
     path('RestPassword/',RestPassword.as_view()),
     path('RestPasswordToken/',RestPasswordToken.as_view()),
@@ -35,5 +35,7 @@ urlpatterns = [
     path('CreateHackaThon/',CreateHackaThon.as_view()),
     path('ListHackathonsForRegistration/',ListHackathonsForRegistration.as_view()),
     path('HackRegistrations/',HackRegistrations.as_view()),
-    path('SendMessageForHackaThon/',SendMessageForHackaThon.as_view())
+    path('SendMessageForHackaThon/',SendMessageForHackaThon.as_view()),
+    path('EnterProblemStatement/',EnterProblemStatement.as_view()),
+    path('DisplayProblemStatement/',DisplayProblemStatement.as_view())
 ]

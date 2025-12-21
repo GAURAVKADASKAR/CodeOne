@@ -1,5 +1,5 @@
 from home.basemodules import *
-
+import random
 
 def ValidateUsername(token):
     username = CheackValidToken(token)
@@ -563,24 +563,28 @@ class CreateHackaThon(APIView):
 class ListHackathonsForRegistration(APIView):
     def get(self,request):
         hackaThon = HackaThon.objects.filter(is_open=True)
-        hackthonList = HackaThonSerializer(hackaThon,many=True)
-        return Response({'status':status.HTTP_200_OK,'message':'success','data':hackthonList.data})
+        hackathonList = HackaThonSerializer(hackaThon,many=True)
+        return Response({'status':status.HTTP_200_OK,'message':'success','data':hackathonList.data})
 
-# Service for hackThonRegistration
+# Service for hackathonRegistration
 class HackRegistrations(APIView):
     def post(self,request):
         memberList = request.data
+        teamName = memberList[0]['team_name']
+        hackathonId = memberList[0]['hackathon_id']
+        teamId = teamName +"-"+ hackathonId +"-"+str(random.randint(0,100))
         for member in memberList:
+            member['team_id'] = teamId
             serializer = HackaThonRegistrationSerializer(data=member)
             if not serializer.is_valid():
                 return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
             serializer.save()
-            SendHackthonRegistrationMail(member['member_email'])
-        return Response({'status':status.HTTP_200_OK,'message':'success'})
+            SendhackathonRegistrationMail(member['member_email'])
+        return Response({'status':status.HTTP_200_OK,'message':'success','teamId':teamId})
         
 # Funtion to verify user for hackathon
 @api_view(["GET"])
-def VerifyHackthonRegistration(request):
+def VerifyhackathonRegistration(request):
     member_email = CheackValidToken(request.GET.get('token'))
     if member_email is False:
         return Response({'status':status.HTTP_200_OK,'message':'Invalid token'})
@@ -594,9 +598,57 @@ class SendMessageForHackaThon(APIView):
         data = request.data
         SendMailToLeads(data['message'],data['id'])
         return Response({'status':status.HTTP_200_OK,'message':'success'})
+    
+# Service to insert problem statement
+class EnterProblemStatement(APIView):
+    def post(self,request):
+        data = request.data
+        hackathonId = data['hackathonId']
+        problemStatements = data['problemStatements']
+        is_success = True
+        for statement in problemStatements:
+            data = {
+                "hackathon_id" : hackathonId,
+                "subject" : statement['subject'],
+                "description" : statement['description']
+            }
+            serializer = hackathonProblemStatementSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                is_success=False
+                return
+        if is_success:
+            return Response({'status':status.HTTP_200_OK,'message':'success'})
+        return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'something went wrong'})
+    
+# Service to Display problem statement
+class DisplayProblemStatement(APIView):
+    def post(self,request):
+        hackathon_id = request.data.get('hackathon_id',None)
+        if hackathon_id:
+            statementList = hackathonProblemStatement.objects.filter(hackathon_id = hackathon_id)
+        else:
+            statementList = hackathonProblemStatement.objects.all()
+        serializer = hackathonProblemStatementSerializer(statementList,many=True)
+        return Response({'status':status.HTTP_200_OK,'message':'success','response':serializer.data})
 
-
-
+# Service to select problem statement
+class SelectProblemStatement(APIView):
+    def post(self,request):
+        data  = request.data
+        teamId = data['team_id']
+        hackathonId = data['hackathon_id']
+        try:
+            team = HackaThonRegistration.objects.get(team_id=teamId,hackathon_id=hackathonId)
+            serializer  = HackathonProblemTeamserializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status':status.HTTP_200_OK,'message':'success'})
+            else:
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
+        except HackaThonRegistration.DoesNotExist:
+            return Response({'status':status.HTTP_404_NOT_FOUND,'message':'invalid team or not hackathon'})
 
 
 
