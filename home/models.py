@@ -213,6 +213,7 @@ class hackathonProblemStatement(models.Model):
     hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
     subject = models.TextField()
     number_of_team = models.PositiveIntegerField(default=0)
+    max_number_of_team = models.PositiveIntegerField(default=5)
     is_available = models.BooleanField(default=True)
     description = models.TextField()
     def __str__(self):
@@ -238,11 +239,11 @@ class HackaThonRegistration(models.Model):
     phone_number = models.TextField()
 
     def __str__(self):
-        return (self.member_name + self.team_name)
+        return (self.member_name +"-"+self.team_name)
 
 # Model for hackathon problem to team
 class HackathonProblemTeam(models.Model):
     hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
     problem_statement_id = models.ForeignKey(hackathonProblemStatement,on_delete=models.CASCADE)
-    team_id = models.ForeignKey(HackaThonRegistration,on_delete=models.CASCADE)
+    team_id = models.TextField()
     

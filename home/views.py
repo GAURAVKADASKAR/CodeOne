@@ -1,5 +1,6 @@
 from home.basemodules import *
 import random
+from django.db.models import F
 
 def ValidateUsername(token):
     username = CheackValidToken(token)
@@ -627,9 +628,9 @@ class DisplayProblemStatement(APIView):
     def post(self,request):
         hackathon_id = request.data.get('hackathon_id',None)
         if hackathon_id:
-            statementList = hackathonProblemStatement.objects.filter(hackathon_id = hackathon_id)
+            statementList = hackathonProblemStatement.objects.filter(hackathon_id = hackathon_id,number_of_team__lt=F('max_number_of_team'))
         else:
-            statementList = hackathonProblemStatement.objects.all()
+            statementList = hackathonProblemStatement.objects.filter(number_of_team__lt=F('max_number_of_team'))
         serializer = hackathonProblemStatementSerializer(statementList,many=True)
         return Response({'status':status.HTTP_200_OK,'message':'success','response':serializer.data})
 
@@ -637,18 +638,30 @@ class DisplayProblemStatement(APIView):
 class SelectProblemStatement(APIView):
     def post(self,request):
         data  = request.data
+        print(type(data),'dslfnfsdflsdnfsndfsfdo')
+        problemStatementId = data['problem_statement_id']
         teamId = data['team_id']
         hackathonId = data['hackathon_id']
-        try:
-            team = HackaThonRegistration.objects.get(team_id=teamId,hackathon_id=hackathonId)
-            serializer  = HackathonProblemTeamserializer(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'status':status.HTTP_200_OK,'message':'success'})
-            else:
-                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
-        except HackaThonRegistration.DoesNotExist:
-            return Response({'status':status.HTTP_404_NOT_FOUND,'message':'invalid team or not hackathon'})
+        hackathonProblem = hackathonProblemStatement.objects.get(id=problemStatementId)
+        if hackathonProblem.number_of_team < hackathonProblem.max_number_of_team:
+            try:
+                team = HackaThonRegistration.objects.get(team_id=teamId,hackathon_id=hackathonId,member_type='lead')
+                alreadyRegistered  = HackathonProblemTeam.objects.filter(team_id=teamId,hackathon_id=hackathonId)
+                if alreadyRegistered.exists():
+                    return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Only one problem selection is allowed'})
+                serializer  = HackathonProblemTeamserializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    hackathonProblem.number_of_team+=1
+                    hackathonProblem.save()
+                    return Response({'status':status.HTTP_200_OK,'message':'success'})
+                else:
+                    return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
+            except HackaThonRegistration.DoesNotExist:
+                return Response({'status':status.HTTP_404_NOT_FOUND,'message':'Invalid team or not hackathon'})
+        else:
+            return Response({'status':status.HTTP_404_NOT_FOUND,'messgage':'no slot available'})
+
 
 
 
