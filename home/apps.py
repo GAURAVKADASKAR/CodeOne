@@ -16,7 +16,16 @@ class HomeConfig(AppConfig):
             for event in events:
                 event.is_active = True
                 event.save()
+        
+        def close_hackthon():
+            from home.models import HackaThon
+            current_time = timezone.now()
+            events = HackaThon.objects.filter(end_time__lte=current_time,is_open=True)
+            for event in events:
+                event.is_open = False
+                event.save()
 
         scheduler = BackgroundScheduler()
         scheduler.add_job(activate_quiz, 'interval', seconds=10)
+        scheduler.add_job(close_hackthon,'interval',seconds=10)
         scheduler.start()

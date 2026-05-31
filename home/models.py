@@ -224,7 +224,7 @@ class hackathonProblemStatement(models.Model):
 class HackaThonRegistration(models.Model):
     PARTICIPATION_TYPE = [
         ('member', 'Member'),
-        ('lead', 'Lead'),
+        ('leader', 'Leader'),
     ]
     hackathon_id = models.CharField(max_length=50)
     hackathon_name = models.TextField()

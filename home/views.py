@@ -1,6 +1,7 @@
 from home.basemodules import *
 import random
 from django.db.models import F
+import requests
 
 def ValidateUsername(token):
     username = CheackValidToken(token)
@@ -572,8 +573,15 @@ class HackRegistrations(APIView):
     def post(self,request):
         memberList = request.data
         teamName = memberList[0]['team_name']
+        teamName = teamName.replace(" ","-").lower()
         hackathonId = memberList[0]['hackathon_id']
-        teamId = teamName +"-"+ hackathonId +"-"+str(random.randint(0,100))
+        teamId = teamName +"-"+ str(hackathonId) +"-"+str(random.randint(0,100))
+        for member in memberList:
+            isAlreadyRegistered = HackaThonRegistration.objects.filter(hackathon_id=hackathonId,member_email=member['member_email'])
+            if isAlreadyRegistered.exists():
+                return Response({'status':status.HTTP_400_BAD_REQUEST,'message':f"{member['member_email']} already registered"})
+        
+        # Insert data into database
         for member in memberList:
             member['team_id'] = teamId
             serializer = HackaThonRegistrationSerializer(data=member)
@@ -626,11 +634,12 @@ class EnterProblemStatement(APIView):
 # Service to Display problem statement
 class DisplayProblemStatement(APIView):
     def post(self,request):
+        max_number_of_team = 5
         hackathon_id = request.data.get('hackathon_id',None)
         if hackathon_id:
-            statementList = hackathonProblemStatement.objects.filter(hackathon_id = hackathon_id,number_of_team__lt=F('max_number_of_team'))
+            statementList = hackathonProblemStatement.objects.filter(hackathon_id = hackathon_id,number_of_team__lt=max_number_of_team)
         else:
-            statementList = hackathonProblemStatement.objects.filter(number_of_team__lt=F('max_number_of_team'))
+            statementList = hackathonProblemStatement.objects.filter(number_of_team__lt=max_number_of_team)
         serializer = hackathonProblemStatementSerializer(statementList,many=True)
         return Response({'status':status.HTTP_200_OK,'message':'success','response':serializer.data})
 
@@ -638,14 +647,13 @@ class DisplayProblemStatement(APIView):
 class SelectProblemStatement(APIView):
     def post(self,request):
         data  = request.data
-        print(type(data),'dslfnfsdflsdnfsndfsfdo')
         problemStatementId = data['problem_statement_id']
         teamId = data['team_id']
         hackathonId = data['hackathon_id']
         hackathonProblem = hackathonProblemStatement.objects.get(id=problemStatementId)
         if hackathonProblem.number_of_team < hackathonProblem.max_number_of_team:
             try:
-                team = HackaThonRegistration.objects.get(team_id=teamId,hackathon_id=hackathonId,member_type='lead')
+                team = HackaThonRegistration.objects.get(team_id=teamId,hackathon_id=hackathonId,member_type='leader')
                 alreadyRegistered  = HackathonProblemTeam.objects.filter(team_id=teamId,hackathon_id=hackathonId)
                 if alreadyRegistered.exists():
                     return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Only one problem selection is allowed'})
@@ -661,13 +669,6 @@ class SelectProblemStatement(APIView):
                 return Response({'status':status.HTTP_404_NOT_FOUND,'message':'Invalid team or not hackathon'})
         else:
             return Response({'status':status.HTTP_404_NOT_FOUND,'messgage':'no slot available'})
-
-
-
-
-
-
-
 
 
         

@@ -50,8 +50,6 @@ def SendMail(username,email):
 # send email to the all hackathon team lead
 def SendMailToLeads(customMessage,id):
     hackaThon = HackaThon.objects.get(id=id)
-
-    print(hackaThon,"we are ==========================================")
     subject=f"{hackaThon.hackathon_name}"
     memberList = HackaThonRegistration.objects.filter(hackathon_id = id,member_type='lead',is_verified=True)
     for member in memberList:
