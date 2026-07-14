@@ -38,5 +38,8 @@ urlpatterns = [
     path('SendMessageForHackaThon/',SendMessageForHackaThon.as_view()),
     path('EnterProblemStatement/',EnterProblemStatement.as_view()),
     path('DisplayProblemStatement/',DisplayProblemStatement.as_view()),
-    path('SelectProblemStatement/',SelectProblemStatement.as_view())
+    path('SelectProblemStatement/',SelectProblemStatement.as_view()),
+    path('getTeamsWithProblemStatements/',getTeamsWithProblemStatements.as_view()),
+    path('AssignJudgeForHackThon/',AssignJudgeForHackThon.as_view()),
+    path('FindEvaluationCriteria/',FindEvaluationCriteria.as_view())
 ]

@@ -103,5 +103,18 @@ class HackathonProblemTeamserializer(ModelSerializer):
     class Meta:
         fields = "__all__"
         model = HackathonProblemTeam
+    
+
+# Serializer for HackathonJudge
+class HackathonJudgeSerializer(ModelSerializer):
+    class Meta:
+        fields = "__all__"
+        model  = HackathonJudge
+    
+# Serializer for EvaluationCriteria
+class EvaluationCriteriaSerializer(ModelSerializer):
+    class Meta:
+        fields = "__all__"
+        model = EvaluationCriteria
 
         

@@ -205,6 +205,7 @@ class HackaThon(models.Model):
     registration_deadline = models.DateTimeField()
     is_registration_open = models.BooleanField(default=True)
     is_open = models.BooleanField(default=True)
+    created_by_user_id = models.ForeignKey(UserRegistraion,on_delete=models.CASCADE)
     def __str__(self):
         return self.hackathon_name
 
@@ -246,4 +247,39 @@ class HackathonProblemTeam(models.Model):
     hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
     problem_statement_id = models.ForeignKey(hackathonProblemStatement,on_delete=models.CASCADE)
     team_id = models.TextField()
-    
+
+
+
+# Model for hackThon and there judge
+class HackathonJudge(models.Model):
+    hackathon_id = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
+    judge = models.ForeignKey(UserRegistraion,on_delete=models.CASCADE)
+    startdate = models.DateTimeField(auto_now_add=True)
+    endDate = models.DateTimeField()
+
+    def __str__(self):
+        return (self.hackathon_id.hackathon_name + "-" + self.judge.username)
+
+# Model to store  hackthon criteria
+class EvaluationCriteria(models.Model):
+    hackathon = models.ForeignKey(HackaThon, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    max_marks = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
+
+# Model to store hackThon marks 
+class HackaThonMarks(models.Model):
+    hackthon = models.ForeignKey(HackaThon,on_delete=models.CASCADE)
+    team = models.ForeignKey(HackaThonRegistration,on_delete=models.CASCADE)
+    mark = models.PositiveBigIntegerField(default=0)
+    criteria = models.ForeignKey(EvaluationCriteria, on_delete=models.CASCADE)
+    title = models.TextField()
+    note = models.TextField()
+    description = models.TextField()
+    startDate =  models.DateTimeField(auto_now_add=True)
+    endDate =  models.DateTimeField(null=True,blank=True)
+
+    def __str__(self):
+        return self.team.team_id+" "+hackthon.hackathon_name 

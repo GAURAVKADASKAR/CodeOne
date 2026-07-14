@@ -669,6 +669,61 @@ class SelectProblemStatement(APIView):
                 return Response({'status':status.HTTP_404_NOT_FOUND,'message':'Invalid team or not hackathon'})
         else:
             return Response({'status':status.HTTP_404_NOT_FOUND,'messgage':'no slot available'})
+        
+    
+# Serivce to fetch team with selected problem statement
+class getTeamsWithProblemStatements(APIView):
+    def post(self,request):
+        teamId = request.data.get('teamId',None)
+        if teamId:
+            teamWithStatement = HackathonProblemTeam.objects.filter(team_id = teamId)
+            if teamWithStatement.exists():
+                serilaizer = HackathonProblemTeamserializer(teamWithStatement,many=True)
+                return Response({'status':status.HTTP_200_OK,'data':serilaizer.data})
+            else:
+                return Response({'status':status.HTTP_200_OK,'message':'No Data Present'})
+            
+        else:
+            teamWithStatement = HackathonProblemTeam.objects.all()
+            serializer = HackathonProblemTeamserializer(teamWithStatement,many=True)
+            return Response({'status':status.HTTP_200_OK,'data':serializer.data})
+        
+class AssignJudgeForHackThon(APIView):
+    def post(self,request):
+        token = request.data.get('token')
+        hackaThonId  = request.data['hackathon_id']
+        judgeId = request.data['judge']
+        username, error_message = ValidateUsername(token)
+        if error_message is not None:
+            return error_message
+        isValid =  HackaThon.objects.filter(created_by_user_id__username=username)
+        if not isValid.exists():
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':'Invalide HackaThon or invalid permission'})
+        serializer = HackathonJudgeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'status':status.HTTP_400_BAD_REQUEST,'message':serializer.errors})
+        serializer.save()
+        return Response({'status':status.HTTP_200_OK,'message':'Success'})
+
+class FindEvaluationCriteria(APIView):
+    def get(self,request):
+        hackThonId = request.GET.get("hackThonId")
+        if hackThonId:
+            criteria = EvaluationCriteria.objects.filter(hackathon__id=hackThonId)
+            if not criteria.exists():
+                return Response({'status':status.HTTP_400_OK,'message':'Invalid Id'})
+            serilaizer = EvaluationCriteriaSerializer(criteria,many=True)
+            return Response({'status':status.HTTP_200_OK,'data':serilaizer.data})
+        criteria = EvaluationCriteria.objects.all()
+        serializer = EvaluationCriteriaSerializer(criteria,many=True)
+        return Response({'status':status.HTTP_200_OK,'message':serializer.data})
+
+
+
+
+        
+        
+
 
 
         
